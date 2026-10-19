@@ -155,8 +155,9 @@ collections:
         required: false
         summary: '{{fields.label}}'
         hint: >-
-          In travel order. "Stops" get a labelled pin on the map; "Via" points
-          just nudge the drawn route onto the roads you actually took.
+          In travel order. "Camps" are where you slept — the map opens on them.
+          "Stops" get a pin; "Via" points just nudge the drawn route onto the
+          roads you actually took.
         fields:
           - { name: label, label: Label, widget: string, required: false }
           - name: kind
@@ -164,8 +165,18 @@ collections:
             widget: select
             default: stop
             options:
+              - { label: 'Camp (where you slept)', value: camp }
               - { label: 'Stop (a place we visited)', value: stop }
               - { label: 'Via (just shapes the route)', value: via }
+          - name: arrive
+            label: How we got here
+            widget: select
+            default: drive
+            required: false
+            hint: Ferry draws a straight crossing instead of road directions.
+            options:
+              - { label: Drive, value: drive }
+              - { label: Ferry, value: ferry }
           # Search a place by name (or click the map / use your location) — no
           # more hand-entering coordinates. Stores a GeoJSON Point.
           - {

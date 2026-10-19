@@ -99,7 +99,7 @@ const noteLabel = (i: number) => (authors[i]?.trim() ? `${authors[i].trim()}'s n
       )
     }
 
-    <TripMap waypoints={entry.waypoints} route={entry.route} roundTrip={entry.roundTrip} />
+    <TripMap waypoints={entry.waypoints} route={entry.route} roundTrip={entry.roundTrip} stays={entry.stays} />
 
     {
       hasNotes && (

@@ -14,12 +14,12 @@
     },
     {
       "label": "Juniper Campground",
-      "kind": "stop",
+      "kind": "camp",
       "location": "{\"type\":\"Point\",\"coordinates\":[-121.52,44.06]}"
     },
     {
       "label": "Riverbend RV Park",
-      "kind": "stop",
+      "kind": "camp",
       "location": "{\"type\":\"Point\",\"coordinates\":[-121.31,44.26]}"
     }
   ],

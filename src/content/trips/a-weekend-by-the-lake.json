@@ -19,7 +19,7 @@
     },
     {
       "label": "Demo Lake State Park",
-      "kind": "stop",
+      "kind": "camp",
       "location": "{\"type\":\"Point\",\"coordinates\":[-121.78,45.71]}"
     }
   ],

@@ -1,34 +1,121 @@
 ---
-import type { Waypoint } from '../lib/types';
+import type { RouteSegment, Waypoint } from '../lib/types';
 
 interface Props {
   waypoints: readonly Waypoint[];
-  // Road-following geometry as [lat, lng] pairs, baked at build time. When
-  // present it's drawn as the route; otherwise we fall back to a straight line.
-  route?: readonly [number, number][];
+  // Route segments as [lat, lng] lines, baked at build time: road-following for
+  // drives, straight for ferries. When empty we fall back to a straight line.
+  route?: readonly RouteSegment[];
   // When true, the fallback line loops back to the first waypoint.
   roundTrip?: boolean;
+  // Where we stayed — used to spot the destination when no waypoint is a camp.
+  stays?: readonly string[];
 }
 
-const { waypoints, route = [], roundTrip = false } = Astro.props;
+const { waypoints, route = [], roundTrip = false, stays = [] } = Astro.props;
+
+type Placed = Waypoint & { lat: number; lng: number };
 
 // Only keep waypoints with real coordinates. Both stops and via-points shape the
-// line/bounds; the client only draws pins for stops.
+// line/bounds; the client only draws pins for stops and camps.
 const points = (waypoints ?? []).filter(
-  (w): w is Waypoint & { lat: number; lng: number } =>
-    typeof w.lat === 'number' && typeof w.lng === 'number'
+  (w): w is Placed => typeof w.lat === 'number' && typeof w.lng === 'number'
 );
+
+// Give each pinned point a role. The first point is home (where the journey
+// starts), so it's drawn quietly. Camps are the destination: explicit `camp`
+// waypoints, else stops named in "Where we stayed", else the last stop out.
+type Role = 'home' | 'camp' | 'stop' | 'via';
+// Names are compared loosely — "Lighthouse Marine Park, WA" is the stop
+// "Lighthouse Marine Park" — by dropping any ", region" or "(note)" tail.
+const placeName = (s: string) => s.toLowerCase().split(/[,(]/)[0].trim();
+const stayNames = stays.map(placeName).filter(Boolean);
+const isStay = (label: string) => {
+  const name = placeName(label);
+  return !!name && stayNames.some((s) => s === name || s.startsWith(name) || name.startsWith(s));
+};
+const roles: Role[] = points.map((p, i) =>
+  p.kind === 'via' ? 'via' : p.kind === 'camp' ? 'camp' : i === 0 && points.length > 1 ? 'home' : 'stop'
+);
+if (!roles.includes('camp')) {
+  points.forEach((p, i) => {
+    if (roles[i] === 'stop' && isStay(p.label)) roles[i] = 'camp';
+  });
+}
+if (!roles.includes('camp')) {
+  const last = roles.lastIndexOf('stop');
+  if (last >= 0) roles[last] = 'camp';
+}
+
+const pins = points.map((p, i) => ({ label: p.label, role: roles[i], lat: p.lat, lng: p.lng }));
+
+// The destination — camps and the stops we made around them — gets its own map,
+// beside an overview of the whole journey from home.
+let focus = pins.filter((p) => p.role === 'camp' || p.role === 'stop');
+if (focus.length === 0) focus = pins;
+
+// Shape the destination map to its area so north/south trips get a tall map
+// and east/west trips a wide one. Computed here, not in the browser, so the box
+// has its final size before the tiles load (no layout shift). Longitude degrees
+// shrink with latitude, hence the cos() — near enough to Web Mercator at this scale.
+type Pt = { lat: number; lng: number };
+function aspectFor(pts: Pt[]) {
+  if (pts.length < 2) return 1;
+  const lats = pts.map((p) => p.lat);
+  const lngs = pts.map((p) => p.lng);
+  const dLat = Math.max(...lats) - Math.min(...lats);
+  const midLat = ((Math.max(...lats) + Math.min(...lats)) / 2) * (Math.PI / 180);
+  const dLng = (Math.max(...lngs) - Math.min(...lngs)) * Math.cos(midLat);
+  if (dLat < 1e-6 && dLng < 1e-6) return 1;
+  const ratio = dLng / Math.max(dLat, 1e-6);
+  return Math.min(4 / 3, Math.max(3 / 4, ratio));
+}
+const aspect = aspectFor(focus).toFixed(3);
+
+// Only show the overview when the journey reaches well beyond the destination
+// (it nearly always does — the drive from home). Otherwise one map says it all.
+const extent: Pt[] = [
+  ...route.flatMap((s) => s.geometry.map(([lat, lng]) => ({ lat, lng }))),
+  ...pins,
+];
+function reachesBeyond(inner: Pt[], all: Pt[]) {
+  if (!inner.length) return false;
+  const lats = inner.map((p) => p.lat);
+  const lngs = inner.map((p) => p.lng);
+  // pad the destination box by 15% (and at least ~2 km) before testing
+  const padLat = Math.max((Math.max(...lats) - Math.min(...lats)) * 0.15, 0.02);
+  const padLng = Math.max((Math.max(...lngs) - Math.min(...lngs)) * 0.15, 0.03);
+  return all.some(
+    (p) =>
+      p.lat < Math.min(...lats) - padLat ||
+      p.lat > Math.max(...lats) + padLat ||
+      p.lng < Math.min(...lngs) - padLng ||
+      p.lng > Math.max(...lngs) + padLng
+  );
+}
+const twoUp = reachesBeyond(focus, extent);
 ---
 
 {
   points.length > 0 && (
-    <div class="map-frame">
-      <div
-        id="trip-map"
-        data-points={JSON.stringify(points)}
-        data-route={JSON.stringify(route)}
-        data-roundtrip={roundTrip ? '1' : ''}
-      />
+    <div
+      class:list={['trip-maps', { 'trip-maps--pair': twoUp }]}
+      style={`--aspect: ${aspect}`}
+      data-pins={JSON.stringify(pins)}
+      data-focus={JSON.stringify(focus.map((p) => [p.lat, p.lng]))}
+      data-route={JSON.stringify(route)}
+      data-roundtrip={roundTrip ? '1' : ''}
+    >
+      {twoUp && (
+        <figure class="map-frame map-frame--whole">
+          <div class="trip-map" data-view="whole" />
+          <figcaption>The whole trip</figcaption>
+        </figure>
+      )}
+      <figure class="map-frame map-frame--focus">
+        <div class="trip-map" data-view="focus" />
+        <figcaption>Places of interest</figcaption>
+      </figure>
     </div>
   )
 }
@@ -37,78 +124,252 @@ const points = (waypoints ?? []).filter(
   import L from 'leaflet';
   import 'leaflet/dist/leaflet.css';
 
-  type Point = { label?: string; kind?: 'stop' | 'via'; lat: number; lng: number };
+  type LatLng = [number, number];
+  type Pin = { label?: string; role: 'home' | 'camp' | 'stop' | 'via'; lat: number; lng: number };
+  type Segment = { mode: 'drive' | 'ferry'; geometry: LatLng[]; fallback?: boolean };
 
-  const el = document.getElementById('trip-map');
-  if (el) {
-    const points: Point[] = JSON.parse(el.dataset.points || '[]');
-    const route: [number, number][] = JSON.parse(el.dataset.route || '[]');
-    const roundTrip = el.dataset.roundtrip === '1';
-    const latlngs: [number, number][] = points.map((p) => [p.lat, p.lng]);
-    // Close the loop for the straight-line fallback (the baked route already does).
-    if (roundTrip && latlngs.length > 1) latlngs.push(latlngs[0]);
+  // Palette from global.css (Leaflet paths take literal colours).
+  const EMBER = '#d2552f';
+  const TEAL = '#2e7e73';
+  const PINE = '#21372b';
+  const CANVAS = '#fbf7ef';
 
-    const map = L.map(el, { scrollWheelZoom: false });
+  // Map symbols, drawn in the badge's paper colour on a 24-unit grid.
+  const HOUSE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${CANVAS}" d="M12 4.5 4 11.6h2.4V19h4.1v-4.6h3V19h4.1v-7.4H20z"/></svg>`;
+  const TENT = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${CANVAS}" d="M12 3.6 2.6 19.4h18.8z"/><path fill="${PINE}" d="M12 12.6 9.9 19.4h4.2z"/></svg>`;
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors',
-    }).addTo(map);
+  const wrap = document.querySelector<HTMLElement>('.trip-maps');
+  if (wrap) {
+    const pins: Pin[] = JSON.parse(wrap.dataset.pins || '[]');
+    const focus: LatLng[] = JSON.parse(wrap.dataset.focus || '[]');
+    const route: Segment[] = JSON.parse(wrap.dataset.route || '[]');
+    const roundTrip = wrap.dataset.roundtrip === '1';
+    const paired = wrap.classList.contains('trip-maps--pair');
 
-    // The route line — ember, like a route traced on a paper map. Prefer the
-    // baked road-following geometry; fall back to a straight line between stops.
-    const hasRoute = route.length > 1;
-    const line = hasRoute ? route : latlngs;
-    if (line.length > 1) {
-      L.polyline(line, {
-        color: '#d2552f',
-        weight: hasRoute ? 4 : 3.5,
-        opacity: 0.9,
-        // Solid for a real road route; dashed when it's just a guide between dots.
-        dashArray: hasRoute ? undefined : '1 9',
-        lineJoin: 'round',
-        lineCap: 'round',
-      }).addTo(map);
+    // With no baked route, draw a straight dotted guide between the points.
+    const segments: Segment[] = route.length
+      ? route
+      : [
+          {
+            mode: 'drive',
+            fallback: true,
+            geometry: [
+              ...pins.map((p): LatLng => [p.lat, p.lng]),
+              ...(roundTrip && pins.length > 1 ? [[pins[0].lat, pins[0].lng] as LatLng] : []),
+            ],
+          },
+        ];
+
+    // Everything on the map, for the whole-trip view.
+    const extent: LatLng[] = [
+      ...segments.flatMap((s) => s.geometry),
+      ...pins.map((p): LatLng => [p.lat, p.lng]),
+    ];
+
+    for (const el of wrap.querySelectorAll<HTMLElement>('.trip-map')) {
+      mount(el, el.dataset.view === 'whole');
     }
 
-    // Vector circle markers for stops only (no bundled icon images needed).
-    // 'via' points just shape the route line, so they get no pin.
-    points
-      .filter((p) => p.kind !== 'via')
-      .forEach((p) => {
-        const marker = L.circleMarker([p.lat, p.lng], {
-          radius: 7,
-          color: '#fbf7ef',
-          weight: 2.5,
-          fillColor: '#2e7e73',
-          fillOpacity: 1,
-        }).addTo(map);
-        if (p.label) {
-          marker.bindTooltip(p.label, { direction: 'top', offset: [0, -6] });
-        }
-      });
+    function mount(el: HTMLElement, overview: boolean) {
+      const map = L.map(el, { scrollWheelZoom: false, zoomControl: !overview });
 
-    // Frame the whole route when we have one, else the waypoints.
-    const extent = hasRoute ? route : latlngs;
-    if (extent.length > 1) {
-      map.fitBounds(extent, { padding: [36, 36] });
-    } else {
-      map.setView(latlngs[0], 11);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(map);
+
+      // Drives are ember, like a route traced on a paper map — solid on real
+      // roads, dotted when it's only a guide. Ferries are a dashed teal crossing.
+      for (const seg of segments) {
+        if (seg.geometry.length < 2) continue;
+        const ferry = seg.mode === 'ferry';
+        const line = L.polyline(seg.geometry, {
+          color: ferry ? TEAL : EMBER,
+          weight: (ferry || seg.fallback ? 3.5 : 4) - (overview ? 0.5 : 0),
+          opacity: 0.9,
+          dashArray: ferry ? '2 8' : seg.fallback ? '1 9' : undefined,
+          lineJoin: 'round',
+          lineCap: 'round',
+        }).addTo(map);
+        if (ferry) line.bindTooltip('⛴ Ferry', { sticky: true, className: 'map-tip' });
+      }
+
+      // Home and camp get a symbol — a house, and the map-legend tent of a
+      // campground — as inline SVG, so no icon images are bundled. Other stops
+      // stay small teal dots; vias only shape the line, so they get no pin.
+      // Camps are the destination: biggest, and on the destination map
+      // labelled without needing a hover.
+      const order = { home: 0, stop: 1, camp: 2, via: -1 } as const;
+      pins
+        .filter((p) => p.role !== 'via')
+        .sort((a, b) => order[a.role] - order[b.role])
+        .forEach((p) => {
+          const camp = p.role === 'camp';
+          const home = p.role === 'home';
+          let marker: L.Marker | L.CircleMarker;
+          let half: number;
+          if (camp || home) {
+            const size = camp ? (overview ? 22 : 28) : overview ? 18 : 22;
+            half = size / 2;
+            marker = L.marker([p.lat, p.lng], {
+              icon: L.divIcon({
+                className: `map-pin map-pin--${p.role}`,
+                html: camp ? TENT : HOUSE,
+                iconSize: [size, size],
+                iconAnchor: [half, half],
+              }),
+              keyboard: false,
+              zIndexOffset: camp ? 1000 : 0,
+            }).addTo(map);
+          } else {
+            half = overview ? 4.5 : 6.5;
+            marker = L.circleMarker([p.lat, p.lng], {
+              radius: half,
+              color: CANVAS,
+              weight: overview ? 2 : 2.5,
+              fillColor: TEAL,
+              fillOpacity: 1,
+            }).addTo(map);
+          }
+          if (p.label) {
+            const pinned = camp && !overview;
+            marker.bindTooltip(p.label, {
+              // A camp's always-on label sits beside the pin, on whichever side
+              // has room, so it isn't clipped at the edge of a small map.
+              direction: pinned ? 'auto' : 'top',
+              offset: pinned ? [half + 3, 0] : [0, -half],
+              permanent: pinned,
+              className: pinned ? 'map-tip map-tip--camp' : 'map-tip',
+            });
+          }
+        });
+
+      let whole = overview;
+
+      // The zoom cap keeps a bad measurement from ever landing us at street level.
+      const fit = (lls: LatLng[]) => {
+        const bounds = L.latLngBounds(lls);
+        if (lls.length > 1 && !bounds.getNorthEast().equals(bounds.getSouthWest())) {
+          map.fitBounds(bounds, { padding: [overview ? 20 : 36, overview ? 20 : 36], maxZoom: 14, animate: false });
+        } else if (lls.length) {
+          map.setView(lls[0], 11, { animate: false });
+        }
+      };
+      const frame = () => fit(whole ? extent : focus);
+
+      // When the overview is hidden (phones), the destination map offers a
+      // toggle out to the whole trip instead.
+      if (paired && !overview) {
+        const Toggle = L.Control.extend({
+          onAdd() {
+            const btn = L.DomUtil.create('button', 'map-toggle');
+            btn.type = 'button';
+            const sync = () => {
+              btn.textContent = whole ? 'Destination' : 'Whole trip';
+              btn.setAttribute('aria-label', whole ? 'Zoom to the destination' : 'Show the whole trip');
+            };
+            sync();
+            L.DomEvent.disableClickPropagation(btn);
+            L.DomEvent.on(btn, 'click', () => {
+              whole = !whole;
+              sync();
+              frame();
+            });
+            return btn;
+          },
+        });
+        new Toggle({ position: 'bottomleft' }).addTo(map);
+      }
+
+      // The module can run before the stylesheets apply (or while the overview
+      // is hidden on a phone), when the container is only a few pixels tall.
+      // Fitting then drives Leaflet's zoom maths to NaN, which it clamps to
+      // maxZoom (19). So only frame once the container has a real size, and
+      // re-frame whenever it changes, until the visitor takes over.
+      let userMoved = false;
+      for (const type of ['mousedown', 'touchstart', 'wheel', 'keydown']) {
+        el.addEventListener(
+          type,
+          (e) => {
+            // Pressing our own toggle isn't the visitor taking over the view.
+            if (!(e.target as HTMLElement).closest?.('.map-toggle')) userMoved = true;
+          },
+          { passive: true }
+        );
+      }
+      const minSize = 72 + 1; // must exceed the fitBounds padding on both axes
+      new ResizeObserver(() => {
+        if (el.clientWidth < minSize || el.clientHeight < minSize) return;
+        map.invalidateSize({ animate: false });
+        if (!userMoved) frame();
+      }).observe(el);
     }
   }
 </script>
 
 <style>
-  .map-frame {
+  .trip-maps {
     margin: 1.9rem 0;
+  }
+  /* Desktop: the whole trip and the destination side by side, at one height
+     (set by the destination's shape). Phones: just the destination, with a
+     toggle out to the whole trip. */
+  .trip-maps--pair .map-frame--whole {
+    display: none;
+  }
+  @media (min-width: 46rem) {
+    /* The destination column is as wide as its shape needs at full height (a
+       narrow column for a north/south destination), up to half the row; the
+       whole trip takes the rest. 15px = the frame's padding + border. */
+    .trip-maps--pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) min(calc(var(--map-h) * var(--aspect) + 15px), 50%);
+      gap: 1.25rem;
+    }
+    .trip-maps--pair .map-frame--whole {
+      display: flex;
+    }
+    .trip-maps--pair .map-frame--whole .trip-map {
+      flex: 1;
+      min-height: 0;
+    }
+    .trip-maps--pair :global(.map-toggle) {
+      display: none;
+    }
+  }
+  /* a lone destination map stays modest */
+  .trip-maps:not(.trip-maps--pair) .map-frame {
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+  .map-frame {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
     padding: 6px;
     background: var(--canvas);
     border: 1.5px solid var(--line-strong);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
   }
-  #trip-map {
-    height: 23rem;
+  .map-frame figcaption {
+    padding: 0.45rem 0.4rem 0.15rem;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .trip-maps {
+    --map-h: 26rem;
+  }
+  .map-frame--focus .trip-map {
+    /* shaped like the destination (--aspect, set from its bounds); the height
+       cap keeps a tall one from taking over the screen */
+    aspect-ratio: var(--aspect);
+    max-height: min(var(--map-h), 60vh);
+  }
+  .trip-map {
     width: 100%;
     border-radius: calc(var(--radius) - 7px);
     z-index: 0;
@@ -121,10 +382,57 @@ const points = (waypoints ?? []).filter(
     font: inherit;
     background: var(--paper);
   }
-  :global(.map-frame .leaflet-tooltip) {
+  :global(.map-frame .map-pin) {
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 2px solid var(--canvas);
+    box-shadow: 0 1px 3px rgba(33, 55, 43, 0.35);
+  }
+  :global(.map-frame .map-pin svg) {
+    width: 78%;
+    height: 78%;
+  }
+  :global(.map-frame .map-pin--camp) {
+    background: var(--pine);
+    border: 2.5px solid var(--ember);
+  }
+  :global(.map-frame .map-pin--home) {
+    background: var(--patina-deep);
+  }
+  :global(.map-frame .map-tip) {
     font-family: var(--mono);
     font-size: 0.7rem;
     border-radius: 6px;
     border-color: var(--line-strong);
+  }
+  :global(.map-frame .map-tip--camp) {
+    font-weight: 700;
+    color: var(--pine);
+    padding: 2px 7px;
+  }
+  /* keep the credit legible but quiet in a small map */
+  :global(.map-frame .leaflet-control-attribution) {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    background: rgba(251, 247, 239, 0.8);
+  }
+  :global(.map-frame .map-toggle) {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pine);
+    background: var(--canvas);
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  :global(.map-frame .map-toggle:hover),
+  :global(.map-frame .map-toggle:focus-visible) {
+    color: var(--ember);
+    border-color: var(--ember);
   }
 </style>

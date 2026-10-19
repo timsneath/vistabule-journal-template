@@ -3,11 +3,22 @@ import siteData from '../content/site.json';
 import aboutData from '../content/about.json';
 import manualData from '../content/manual.json';
 import routesData from '../data/routes.json';
-import type { TripEntry, TripListItem, Waypoint } from './types';
+import type { RouteSegment, TripEntry, TripListItem, Waypoint } from './types';
 
-// Build-time route cache: slug → road-following geometry (see
-// scripts/build-routes.mjs). Computed once and committed, so reads here are free.
-const routes = routesData as Record<string, { geometry?: [number, number][] }>;
+// Build-time route cache: slug → route segments (see scripts/build-routes.mjs).
+// Computed once and committed, so reads here are free. Older cache entries hold a
+// single drive `geometry`; read those as one drive segment.
+const routes = routesData as Record<
+  string,
+  { segments?: RouteSegment[]; geometry?: [number, number][] }
+>;
+
+function routeFor(slug: string): RouteSegment[] {
+  const cached = routes[slug];
+  if (cached?.segments) return cached.segments;
+  if (cached?.geometry) return [{ mode: 'drive', geometry: cached.geometry }];
+  return [];
+}
 
 // Content is read through Astro's content layer (see src/content.config.ts).
 // Trips are authored in Sveltia CMS; the site itself is fully static.
@@ -15,7 +26,7 @@ const routes = routesData as Record<string, { geometry?: [number, number][] }>;
 // Sveltia's map field stores each waypoint location as a stringified GeoJSON
 // Point with [lng, lat] order. Parse it into the lat/lng the map component uses.
 function parseWaypoints(
-  raw: ReadonlyArray<{ label?: string; kind?: string; location?: string }> = []
+  raw: ReadonlyArray<{ label?: string; kind?: string; arrive?: string | null; location?: string }> = []
 ): Waypoint[] {
   return raw.map((w) => {
     let lat: number | null = null;
@@ -28,8 +39,9 @@ function parseWaypoints(
     } catch {
       // malformed/empty location → leave lat/lng null (filtered out on the map)
     }
-    const kind = w.kind === 'via' ? 'via' : 'stop';
-    return { label: w.label ?? '', kind, lat, lng };
+    const kind = w.kind === 'via' || w.kind === 'camp' ? w.kind : 'stop';
+    const arrive = w.arrive === 'ferry' ? 'ferry' : 'drive';
+    return { label: w.label ?? '', kind, arrive, lat, lng };
   });
 }
 
@@ -37,7 +49,7 @@ function toTripEntry(slug: string, data: TripEntry & { waypoints: any }): TripEn
   return {
     ...data,
     waypoints: parseWaypoints(data.waypoints),
-    route: routes[slug]?.geometry ?? [],
+    route: routeFor(slug),
   };
 }
 

@@ -23,9 +23,14 @@ const trips = defineCollection({
       .array(
         z.object({
           label: z.string().default(''),
-          // 'stop' = a place we visited (shown as a pin); 'via' = a routing-only
-          // hint that shapes the line but gets no marker.
-          kind: z.enum(['stop', 'via']).default('stop'),
+          // 'camp' = where we slept (the map opens on these); 'stop' = a place
+          // we visited (shown as a pin); 'via' = a routing-only hint that shapes
+          // the line but gets no marker.
+          kind: z.enum(['stop', 'via', 'camp']).default('stop'),
+          // How we travelled the leg INTO this waypoint. 'ferry' legs are drawn
+          // as a straight crossing rather than routed by road. Anything else
+          // (missing, blank) counts as a drive.
+          arrive: z.enum(['drive', 'ferry']).catch('drive'),
           // Sveltia's map field stores a stringified GeoJSON Point
           // ('{"type":"Point","coordinates":[lng,lat]}'); parsed in reader.ts.
           location: z.string().default(''),
