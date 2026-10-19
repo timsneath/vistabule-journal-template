@@ -11,7 +11,8 @@
 	// Settings → Domains & Routes) once it's deployed.
 	//
 	// (Hosting under a sub-path instead? See the README section
-	// "Advanced: hosting under a sub-path" — that setup adds a small worker.)
+	// "Advanced: hosting under a sub-path" — still no worker script, just an
+	// outDir in astro.config.mjs and two routes here.)
 	"assets": { "directory": "./dist" },
 	"observability": { "enabled": true }
 }

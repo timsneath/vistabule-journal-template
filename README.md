@@ -223,46 +223,27 @@ within a minute. That's the whole loop.
 ## Advanced: hosting under a sub-path
 
 Most people should use a subdomain (e.g. `journal.example.com`) and keep `base: '/'`
-— it's simpler and needs no worker. But if you specifically want the journal under a
-**path** of a bigger site (`example.com/journal/…`), do three things:
+— it's simpler. But if you specifically want the journal under a **path** of a bigger
+site (`example.com/journal/…`), do three things. There's still no worker code: the
+site stays plain static files.
 
-**1.** Set the base path in `astro.config.mjs`:
+**1.** Set the base path in `astro.config.mjs`, and build into a matching folder:
 
 ```js
 base: '/journal',
+outDir: './dist/journal',
 ```
 
-**2.** Add a tiny worker that strips the prefix before serving the static files.
-Create `worker.js` in the project root:
+`base` puts `/journal` in front of every link. `outDir` builds the files into
+`dist/journal/`, so each file's location already matches its web address.
 
-```js
-// Astro emits files WITHOUT the base prefix in their paths, but references them
-// WITH it. Strip the prefix before looking the asset up, and re-add it to any
-// redirect Location (e.g. the trailing-slash redirect for /journal/trips/foo).
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    const stripped = url.pathname.replace(/^\/journal(?=\/|$)/, '') || '/';
-    const assetRequest = new Request(new URL(stripped + url.search, url.origin), request);
-    let response = await env.ASSETS.fetch(assetRequest);
-    const location = response.headers.get('location');
-    if (location && location.startsWith('/') && !location.startsWith('/journal')) {
-      response = new Response(response.body, response);
-      response.headers.set('location', '/journal' + location);
-    }
-    return response;
-  },
-};
-```
-
-**3.** Point `wrangler.jsonc` at the worker and bind it to your sub-path routes:
+**2.** Bind `wrangler.jsonc` to your sub-path routes (keep `"directory": "./dist"`):
 
 ```jsonc
 {
   "name": "my-teardrop-journal",
   "compatibility_date": "2026-06-22",
-  "main": "worker.js",
-  "assets": { "directory": "./dist", "binding": "ASSETS" },
+  "assets": { "directory": "./dist" },
   "routes": [
     { "pattern": "example.com/journal", "zone_name": "example.com" },
     { "pattern": "example.com/journal/*", "zone_name": "example.com" }
@@ -270,9 +251,16 @@ export default {
 }
 ```
 
-Replace `journal` with your chosen path throughout (`astro.config.mjs`, `worker.js`,
-and `public/admin/config.yml`'s admin route). This needs the domain to be on
-Cloudflare with a proxied DNS record so the route reaches Cloudflare's edge.
+You need both routes: the second only matches `/journal/…`, so the bare `/journal`
+needs its own. Cloudflare then redirects it to `/journal/`.
+
+**3.** The domain must be on Cloudflare with a **proxied** DNS record on it, so the
+routes reach Cloudflare's edge. If the domain has no website yet (e.g. it's only used
+for email), add `AAAA  example.com  100::  (Proxied)`. That doesn't affect email.
+
+Replace `journal` with your chosen path throughout. To test locally the way
+Cloudflare serves it: `npm run build && npx wrangler dev`, then open
+`http://localhost:8787/journal/` and `/journal/admin/`.
 
 ## Where things are
 

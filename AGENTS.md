@@ -12,8 +12,11 @@ is the fast operational guide; `README.md` is the fuller setup-and-fork referenc
    Astro does **not** prefix literal hrefs (it does auto-prefix routing and
    `<Image>`/asset URLs). At `base: '/'` this is a no-op.
 2. **Fully static — no Astro adapter, and don't add one.** The build is plain static
-   files. For sub-path hosting a tiny Cloudflare Worker strips the prefix (see the
-   README "Advanced" section); at the root, Cloudflare serves `dist/` directly.
+   files served by an **assets-only** Cloudflare Worker (no `main` script) —
+   Cloudflare's recommended setup for a pre-rendered Astro site. For sub-path hosting,
+   set `outDir: './dist/<path>'` alongside `base` so files sit at their URL paths (see
+   the README "Advanced" section). Deploy with Wrangler: the beta `cf` CLI's
+   `cf build`/`cf deploy` assume the Astro adapter and can't build this site yet.
 3. **The CMS commits to `main`.** Editors (Sveltia) push commits directly to the repo.
    **`git pull --rebase` before you push** — the remote may have CMS commits you don't
    have locally.

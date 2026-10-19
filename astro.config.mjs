@@ -12,9 +12,9 @@ export default defineConfig({
   // lives at the root of a domain or subdomain (e.g. journal.example.com).
   //
   // ONLY set a base (e.g. '/camping') if you're hosting under a sub-path of a
-  // bigger site (example.com/camping). If you do, you also need the small
-  // path-stripping Cloudflare worker — see the README section
-  // "Advanced: hosting under a sub-path".
+  // bigger site (example.com/camping). If you do, also add
+  // `outDir: './dist/camping'` and sub-path routes in wrangler.jsonc — see the
+  // README section "Advanced: hosting under a sub-path".
   base: '/',
 
   // Fully static site (output: 'static' is the default). The editor is a
