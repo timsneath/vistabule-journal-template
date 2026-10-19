@@ -129,14 +129,14 @@ const twoUp = reachesBeyond(focus, extent);
   type Segment = { mode: 'drive' | 'ferry'; geometry: LatLng[]; fallback?: boolean };
 
   // Palette from global.css (Leaflet paths take literal colours).
-  const EMBER = '#d2552f';
-  const TEAL = '#2e7e73';
-  const PINE = '#21372b';
-  const CANVAS = '#fbf7ef';
+  const SUMAC = '#a8323e';
+  const LOON = '#2d6a8f';
+  const LAKE = '#1f3445';
+  const CANVAS = '#fbfaf6';
 
   // Map symbols, drawn in the badge's paper colour on a 24-unit grid.
   const HOUSE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${CANVAS}" d="M12 4.5 4 11.6h2.4V19h4.1v-4.6h3V19h4.1v-7.4H20z"/></svg>`;
-  const TENT = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${CANVAS}" d="M12 3.6 2.6 19.4h18.8z"/><path fill="${PINE}" d="M12 12.6 9.9 19.4h4.2z"/></svg>`;
+  const TENT = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${CANVAS}" d="M12 3.6 2.6 19.4h18.8z"/><path fill="${LAKE}" d="M12 12.6 9.9 19.4h4.2z"/></svg>`;
 
   const wrap = document.querySelector<HTMLElement>('.trip-maps');
   if (wrap) {
@@ -178,13 +178,13 @@ const twoUp = reachesBeyond(focus, extent);
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
-      // Drives are ember, like a route traced on a paper map — solid on real
-      // roads, dotted when it's only a guide. Ferries are a dashed teal crossing.
+      // Drives are sumac red, like a route traced on a paper map — solid on real
+      // roads, dotted when it's only a guide. Ferries are a dashed blue crossing.
       for (const seg of segments) {
         if (seg.geometry.length < 2) continue;
         const ferry = seg.mode === 'ferry';
         const line = L.polyline(seg.geometry, {
-          color: ferry ? TEAL : EMBER,
+          color: ferry ? LOON : SUMAC,
           weight: (ferry || seg.fallback ? 3.5 : 4) - (overview ? 0.5 : 0),
           opacity: 0.9,
           dashArray: ferry ? '2 8' : seg.fallback ? '1 9' : undefined,
@@ -196,7 +196,7 @@ const twoUp = reachesBeyond(focus, extent);
 
       // Home and camp get a symbol — a house, and the map-legend tent of a
       // campground — as inline SVG, so no icon images are bundled. Other stops
-      // stay small teal dots; vias only shape the line, so they get no pin.
+      // stay small blue dots; vias only shape the line, so they get no pin.
       // Camps are the destination: biggest, and on the destination map
       // labelled without needing a hover.
       const order = { home: 0, stop: 1, camp: 2, via: -1 } as const;
@@ -227,7 +227,7 @@ const twoUp = reachesBeyond(focus, extent);
               radius: half,
               color: CANVAS,
               weight: overview ? 2 : 2.5,
-              fillColor: TEAL,
+              fillColor: LOON,
               fillOpacity: 1,
             }).addTo(map);
           }
@@ -387,18 +387,18 @@ const twoUp = reachesBeyond(focus, extent);
     place-items: center;
     border-radius: 50%;
     border: 2px solid var(--canvas);
-    box-shadow: 0 1px 3px rgba(33, 55, 43, 0.35);
+    box-shadow: 0 1px 3px rgba(31, 52, 69, 0.35);
   }
   :global(.map-frame .map-pin svg) {
     width: 78%;
     height: 78%;
   }
   :global(.map-frame .map-pin--camp) {
-    background: var(--pine);
-    border: 2.5px solid var(--ember);
+    background: var(--lake);
+    border: 2.5px solid var(--sumac);
   }
   :global(.map-frame .map-pin--home) {
-    background: var(--patina-deep);
+    background: var(--trailer-deep);
   }
   :global(.map-frame .map-tip) {
     font-family: var(--mono);
@@ -408,21 +408,21 @@ const twoUp = reachesBeyond(focus, extent);
   }
   :global(.map-frame .map-tip--camp) {
     font-weight: 700;
-    color: var(--pine);
+    color: var(--lake);
     padding: 2px 7px;
   }
   /* keep the credit legible but quiet in a small map */
   :global(.map-frame .leaflet-control-attribution) {
     font-family: var(--mono);
     font-size: 0.55rem;
-    background: rgba(251, 247, 239, 0.8);
+    background: rgba(251, 250, 246, 0.8);
   }
   :global(.map-frame .map-toggle) {
     font-family: var(--mono);
     font-size: 0.66rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--pine);
+    color: var(--lake);
     background: var(--canvas);
     border: 1.5px solid var(--line-strong);
     border-radius: 999px;
@@ -432,7 +432,7 @@ const twoUp = reachesBeyond(focus, extent);
   }
   :global(.map-frame .map-toggle:hover),
   :global(.map-frame .map-toggle:focus-visible) {
-    color: var(--ember);
-    border-color: var(--ember);
+    color: var(--sumac);
+    border-color: var(--sumac);
   }
 </style>

@@ -70,8 +70,9 @@ Per-trip notes have two fields (`notesOne`, `notesTwo`) labelled at render time 
 
 ## Design system
 
-All tokens are at the top of `src/styles/global.css`. Palette: **pine / teal / maple /
-ember** on **birch paper**. Type: **Bricolage Grotesque** (display), **Hanken Grotesk**
+All tokens are at the top of `src/styles/global.css`. Palette: **lake / loon /
+prairie / sumac** on **birch paper** (a North Woods set — the live site this came from
+uses its own). Type: **Bricolage Grotesque** (display), **Hanken Grotesk**
 (body), **Space Mono** (the data layer — dates, miles, labels). The teardrop mark
 (`Teardrop.astro`) recolors via `--td-body / --td-line / --td-glass`.
 

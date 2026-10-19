@@ -1,27 +1,27 @@
 /* ============================================================================
    The logbook of a teardrop trailer — the whole design system.
-   Palette drawn from a teardrop's materials: pine forest, patina green, enamel
-   teal, maple (birch-ply galley + wood trim), birch paper, a single ember spark.
-   Change these tokens to rebrand the whole site.
+   A North Woods palette: Lake Superior slate, loon blue, prairie gold, birch-bark
+   paper, and a single spark of autumn sumac red. Change these tokens to make the
+   site your own — everything else reads from them.
    ========================================================================== */
 
 :root {
   /* color */
-  --pine: #21372b;
-  --pine-deep: #182a20;
-  --patina: #99a793;     /* a teardrop's exterior — Vistabule "Patina Green" */
-  --patina-deep: #71826f;
-  --teal: #2e7e73;
-  --teal-deep: #245d55;
-  --maple: #c7894b;
-  --maple-soft: #e7c79b;
-  --ember: #d2552f;
-  --paper: #f4eee1;
-  --canvas: #fbf7ef;
-  --ink: #2a2620;
-  --ink-soft: #6c6356;
-  --line: #e3d8c4;
-  --line-strong: #d2c4ac;
+  --lake: #1f3445;
+  --lake-deep: #15242f;
+  --trailer: #a9b7bd;    /* your trailer's paint — the teardrop mark's body */
+  --trailer-deep: #7a8b93;
+  --loon: #2d6a8f;
+  --loon-deep: #22516e;
+  --prairie: #c79a3b;
+  --prairie-soft: #ecd9a6;
+  --sumac: #a8323e;
+  --paper: #f1efe8;
+  --canvas: #fbfaf6;
+  --ink: #22272b;
+  --ink-soft: #5d646a;
+  --line: #dfdbd0;
+  --line-strong: #cbc5b6;
 
   /* type */
   --display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', ui-sans-serif,
@@ -34,9 +34,9 @@
   --radius: 16px;
   --radius-sm: 10px;
   --maxw: 66rem;
-  --shadow: 0 1px 2px rgba(24, 42, 32, 0.07), 0 10px 30px -12px rgba(24, 42, 32, 0.22);
-  --shadow-lift: 0 2px 4px rgba(24, 42, 32, 0.08),
-    0 22px 44px -18px rgba(24, 42, 32, 0.32);
+  --shadow: 0 1px 2px rgba(21, 36, 47, 0.07), 0 10px 30px -12px rgba(21, 36, 47, 0.22);
+  --shadow-lift: 0 2px 4px rgba(21, 36, 47, 0.08),
+    0 22px 44px -18px rgba(21, 36, 47, 0.32);
 }
 
 * {
@@ -54,7 +54,7 @@ body {
   /* faint topographic warmth */
   background-image: radial-gradient(
       circle at 50% -8%,
-      rgba(46, 126, 115, 0.06),
+      rgba(45, 106, 143, 0.06),
       transparent 60%
     );
   color: var(--ink);
@@ -77,12 +77,12 @@ h3 {
 }
 
 a {
-  color: var(--teal-deep);
+  color: var(--loon-deep);
   text-decoration-thickness: 1.5px;
   text-underline-offset: 2px;
 }
 a:hover {
-  color: var(--ember);
+  color: var(--sumac);
 }
 
 img {
@@ -92,12 +92,12 @@ img {
 }
 
 ::selection {
-  background: var(--maple-soft);
+  background: var(--prairie-soft);
   color: var(--ink);
 }
 
 :focus-visible {
-  outline: 3px solid var(--teal);
+  outline: 3px solid var(--loon);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -137,7 +137,7 @@ main {
 .site-header {
   background: var(--canvas);
   border-bottom: 2px solid var(--line);
-  box-shadow: 0 2px 0 var(--maple-soft);
+  box-shadow: 0 2px 0 var(--prairie-soft);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -163,13 +163,13 @@ main {
   color: var(--ink);
   text-decoration: none;
   white-space: nowrap;
-  --td-body: var(--patina);
+  --td-body: var(--trailer);
   --td-line: var(--ink);
   --td-glass: var(--canvas);
 }
 .brand:hover {
   color: var(--ink);
-  --td-body: var(--maple);
+  --td-body: var(--prairie);
 }
 .brand .teardrop {
   flex: none;
@@ -196,7 +196,7 @@ main {
   background: var(--paper);
 }
 .nav a[aria-current='page'] {
-  color: var(--teal-deep);
+  color: var(--loon-deep);
   background: var(--paper);
   box-shadow: inset 0 0 0 1.5px var(--line-strong);
 }
@@ -204,13 +204,13 @@ main {
 /* ----- footer ------------------------------------------------------------ */
 
 .site-footer {
-  background: var(--pine);
-  color: rgba(244, 238, 225, 0.72);
+  background: var(--lake);
+  color: rgba(241, 239, 232, 0.72);
   margin-top: 4rem;
   padding-block: 2.25rem;
-  --td-body: var(--patina);
+  --td-body: var(--trailer);
   --td-line: var(--paper);
-  --td-glass: var(--pine);
+  --td-glass: var(--lake);
 }
 .site-footer__inner {
   display: flex;
@@ -225,7 +225,7 @@ main {
   font-size: 0.9rem;
 }
 .site-footer .eyebrow {
-  color: var(--maple-soft);
+  color: var(--prairie-soft);
 }
 
 /* the hatch — the teardrop mark is the (quiet) way into the editor */
@@ -237,14 +237,14 @@ main {
 }
 .footer-hatch:hover {
   transform: translateY(-2px) rotate(-3deg);
-  --td-body: var(--ember);
+  --td-body: var(--sumac);
 }
 
 /* ----- home hero --------------------------------------------------------- */
 
 .hero {
   position: relative;
-  background: var(--pine);
+  background: var(--lake);
   color: var(--paper);
   overflow: hidden;
   isolation: isolate;
@@ -271,9 +271,9 @@ main {
   padding-block: 3rem 4.5rem;
 }
 .hero__art {
-  --td-body: var(--patina);
+  --td-body: var(--trailer);
   --td-line: var(--paper);
-  --td-glass: var(--pine);
+  --td-glass: var(--lake);
   justify-self: center;
   /* ~2x the 220px intrinsic size on desktop; shrinks to fit narrower columns */
   width: 440px;
@@ -290,10 +290,10 @@ main {
   margin: 0.85rem 0 0;
   max-width: 32rem;
   font-size: 1.15rem;
-  color: rgba(244, 238, 225, 0.82);
+  color: rgba(241, 239, 232, 0.82);
 }
 .hero .eyebrow {
-  color: var(--maple-soft);
+  color: var(--prairie-soft);
   margin-bottom: 0.6rem;
 }
 
@@ -308,9 +308,9 @@ main {
   display: inline-flex;
   gap: 4px;
   padding: 0.5rem;
-  background: linear-gradient(var(--pine-deep), #11201a);
+  background: linear-gradient(var(--lake-deep), #0e1a22);
   border-radius: 12px;
-  box-shadow: inset 0 0 0 2px rgba(199, 137, 75, 0.5),
+  box-shadow: inset 0 0 0 2px rgba(199, 154, 59, 0.5),
     inset 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 .reel {
@@ -322,7 +322,7 @@ main {
   font-weight: 700;
   font-size: 1.9rem;
   color: var(--paper);
-  background: linear-gradient(#3a4f43, #243a2e 48%, #1c2e24 52%, #2c4234);
+  background: linear-gradient(#3a4f5f, #233847 48%, #1b2d3a 52%, #2b4152);
   border-radius: 5px;
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12),
     inset 0 -2px 3px rgba(0, 0, 0, 0.5);
@@ -345,12 +345,12 @@ main {
   font-weight: 700;
   font-size: 1.9rem;
   line-height: 1;
-  color: var(--maple-soft);
+  color: var(--prairie-soft);
   padding: 0 0.05rem 0.42rem;
 }
 .reel--tenths {
   color: var(--paper);
-  background: linear-gradient(#e2693d, #c14a26 48%, #a83f1f 52%, #cf552b);
+  background: linear-gradient(#c4505b, #a33441 48%, #8e2b37 52%, #b33c49);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2),
     inset 0 -2px 3px rgba(0, 0, 0, 0.45);
 }
@@ -363,7 +363,7 @@ main {
   font-family: var(--mono);
   font-size: 0.74rem;
   letter-spacing: 0.06em;
-  color: rgba(244, 238, 225, 0.7);
+  color: rgba(241, 239, 232, 0.7);
 }
 .gauge b {
   color: var(--paper);
@@ -425,12 +425,12 @@ main {
   width: 100%;
   aspect-ratio: 3 / 2;
   object-fit: cover;
-  background: var(--teal);
+  background: var(--loon);
 }
 .card__img-empty {
-  --td-body: var(--patina);
+  --td-body: var(--trailer);
   --td-line: var(--paper);
-  --td-glass: var(--teal);
+  --td-glass: var(--loon);
   display: grid;
   place-items: center;
 }
@@ -466,9 +466,9 @@ main {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: var(--teal-deep);
-  background: rgba(46, 126, 115, 0.1);
-  border: 1.5px solid rgba(46, 126, 115, 0.28);
+  color: var(--loon-deep);
+  background: rgba(45, 106, 143, 0.1);
+  border: 1.5px solid rgba(45, 106, 143, 0.28);
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
   white-space: nowrap;
@@ -498,7 +498,7 @@ main {
   text-decoration: none;
 }
 .back:hover {
-  color: var(--ember);
+  color: var(--sumac);
 }
 .trip h1 {
   font-size: clamp(2rem, 5vw, 3.1rem);
@@ -543,7 +543,7 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
-/* where we stayed — warm wood-toned chips, distinct from the teal mileage chip */
+/* where we stayed — prairie-gold chips, distinct from the blue mileage chip */
 .stays {
   display: flex;
   flex-wrap: wrap;
@@ -570,9 +570,9 @@ main {
   display: inline-block;
   font-size: 0.92rem;
   font-weight: 600;
-  color: #8a5824;
-  background: rgba(199, 137, 75, 0.13);
-  border: 1.5px solid rgba(199, 137, 75, 0.34);
+  color: #7c5a17;
+  background: rgba(199, 154, 59, 0.13);
+  border: 1.5px solid rgba(199, 154, 59, 0.34);
   border-radius: 999px;
   padding: 0.2rem 0.75rem;
 }
@@ -608,7 +608,7 @@ main {
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--teal-deep);
+  color: var(--loon-deep);
 }
 .note p {
   margin: 0;
@@ -618,7 +618,7 @@ main {
 /* (the photo gallery + lightbox live in src/components/Gallery.astro) */
 
 /* prev/next between trips — peer links, echoing the "All journeys" back link
-   (mono eyebrow, ember on hover); deliberately not a card */
+   (mono eyebrow, sumac on hover); deliberately not a card */
 .tripnav {
   display: flex;
   justify-content: space-between;
@@ -651,7 +651,7 @@ main {
 }
 .tripnav__link:hover .tripnav__dir,
 .tripnav__link:hover .tripnav__title {
-  color: var(--ember);
+  color: var(--sumac);
 }
 .tripnav__date {
   font-family: var(--mono);
@@ -708,7 +708,7 @@ main {
   padding: 1.3rem 1.4rem;
   position: sticky;
   top: 5rem;
-  --td-body: var(--patina);
+  --td-body: var(--trailer);
   --td-line: var(--ink);
   --td-glass: var(--canvas);
 }
@@ -763,10 +763,10 @@ main {
   font-size: 0.74rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--teal-deep);
+  color: var(--loon-deep);
   margin: 0 0 0.6rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--maple-soft);
+  border-bottom: 2px solid var(--prairie-soft);
 }
 .parts {
   list-style: none;
@@ -812,28 +812,28 @@ main {
   font-size: 0.7rem;
   letter-spacing: 0.04em;
   text-decoration: none;
-  color: var(--teal-deep);
-  background: rgba(46, 126, 115, 0.1);
-  border: 1.5px solid rgba(46, 126, 115, 0.3);
+  color: var(--loon-deep);
+  background: rgba(45, 106, 143, 0.1);
+  border: 1.5px solid rgba(45, 106, 143, 0.3);
   border-radius: 999px;
   padding: 0.32rem 0.7rem;
   white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 .part__link:hover {
-  background: var(--teal);
+  background: var(--loon);
   color: var(--paper);
-  border-color: var(--teal);
+  border-color: var(--loon);
 }
 .part__link--manual {
-  color: #9a4a25;
-  background: rgba(210, 85, 47, 0.1);
-  border-color: rgba(210, 85, 47, 0.3);
+  color: #8a2a35;
+  background: rgba(168, 50, 62, 0.1);
+  border-color: rgba(168, 50, 62, 0.3);
 }
 .part__link--manual:hover {
-  background: var(--ember);
+  background: var(--sumac);
   color: var(--paper);
-  border-color: var(--ember);
+  border-color: var(--sumac);
 }
 .part__none {
   font-family: var(--mono);
@@ -929,11 +929,11 @@ main {
     text-decoration: none;
   }
   .crumbs a:hover {
-    color: var(--ember);
+    color: var(--sumac);
   }
   /* the leaf (a long trip title) truncates rather than wrapping */
   .crumbs li[aria-current='page'] {
-    color: var(--teal-deep);
+    color: var(--loon-deep);
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -1025,7 +1025,7 @@ main {
     background: var(--paper);
   }
   .menu__panel a[aria-current='page'] {
-    color: var(--teal-deep);
+    color: var(--loon-deep);
     background: var(--paper);
   }
 }
