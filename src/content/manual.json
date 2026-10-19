@@ -1,33 +1,89 @@
 {
-  "intro": "Demo content — quick links to the makers and manuals behind your trailer's components. Handy when something needs a look while you're out on the road. Replace these with your own.",
+  "intro": "Quick links to the makers and manuals behind a Vistabule's components — handy when something needs a look while you're out on the road. Edit these to match your own trailer's options.",
   "links": [
     {
       "what": "Trailer",
-      "part": "Your teardrop model",
+      "part": "Vistabule Teardrop",
       "category": "Trailer",
-      "productUrl": "https://example.com",
-      "manualUrl": ""
+      "productUrl": "https://vistabule.com",
+      "manualUrl": "https://www.vistabule.com/wp-content/uploads/Vistabule-Manual-2025-V1.pdf"
     },
     {
       "what": "Roof fan",
-      "part": "Example MaxxFan",
+      "part": "Maxxair MaxxFan Deluxe 7500K",
       "category": "Comfort",
-      "productUrl": "https://example.com",
-      "manualUrl": ""
+      "productUrl": "https://www.maxxair.com/products/fans/maxxfan-deluxe-00-07500K/",
+      "manualUrl": "https://library.maxxair.com/wp-content/uploads/2023/03/11e90001k_maxxfan-deluxe-install-11-2017.pdf"
+    },
+    {
+      "what": "Heater",
+      "part": "Propex HS2000",
+      "category": "Comfort",
+      "productUrl": "https://propexheatsource.co.uk/heaters/hs2000/",
+      "manualUrl": "https://propexheatsource.co.uk/wp-content/uploads/2013/06/HS2000-from-April-2018.pdf"
+    },
+    {
+      "what": "Thermostat",
+      "part": "Propex Digistat Digital Thermostat",
+      "category": "Comfort",
+      "productUrl": "https://propexnorthamerica.com/digital-thermostat-for-propex-hs-series-heater/",
+      "manualUrl": "https://propexnorthamerica.com/content/Instructions/USA_Digistat_book_with_QR.pdf"
     },
     {
       "what": "Cooktop",
-      "part": "Example two-burner",
+      "part": "Dometic PI8022",
       "category": "Galley",
-      "productUrl": "https://example.com",
+      "productUrl": "https://www.dometic.com/en/product/dometic-pi8022-9620017480",
       "manualUrl": ""
     },
     {
-      "what": "Battery",
-      "part": "Example 100Ah LiFePO4",
+      "what": "Fridge",
+      "part": "Dometic CFX3 35",
+      "category": "Galley",
+      "productUrl": "https://www.dometic.com/en-us/product/dometic-cfx3-35-9600024617",
+      "manualUrl": "https://media.dometic.com/externalassets/07-0703-070323-070323001_9600024617_92240.pdf"
+    },
+    {
+      "what": "Battery Charger",
+      "part": "Victron Blue Smart IP65 12V/15A Charger",
       "category": "Electrical",
-      "productUrl": "https://example.com",
+      "productUrl": "https://www.victronenergy.com/chargers/blue-smart-ip65-charger",
+      "manualUrl": "https://www.victronenergy.com/media/pg/Blue_Smart_IP65_Charger_120V_manual/en/index-en.html"
+    },
+    {
+      "what": "Battery Monitor",
+      "part": "Victron BMV-712 Smart Battery Monitor",
+      "category": "Electrical",
+      "productUrl": "https://www.victronenergy.com/display-and-panels/bmv-712-smart",
+      "manualUrl": "https://www.victronenergy.com/media/pg/BMV-712_Smart/en/index-en.html"
+    },
+    {
+      "what": "DC Charger",
+      "part": "Victron Orion-Tr Smart DC-DC Charger",
+      "category": "Electrical",
+      "productUrl": "https://www.victronenergy.com/dc-dc-converters/orion-tr-smart",
+      "manualUrl": "https://www.victronenergy.com/media/pg/Orion-Tr_Smart_DC-DC_Charger_-_Isolated/en/index-en.html"
+    },
+    {
+      "what": "Trailer Jack",
+      "part": "ARK XO350R Ratcheting Trailer Jack",
+      "category": "Towing",
+      "productUrl": "https://www.arkcorporation.us/products/xo350r-ratchet-style-trailer-jack",
       "manualUrl": ""
+    },
+    {
+      "what": "12V Battery",
+      "part": "Battle Born BB10012 100Ah 12V LiFePO4 Deep Cycle Battery",
+      "category": "Electrical",
+      "productUrl": "https://battlebornbatteries.com/products/100ah-12v-lifepo4-deep-cycle-battery",
+      "manualUrl": "https://battlebornbatteries.com/cdn/shop/files/BB10012_BB1002H_Manual.pdf?v=9757819225880144261"
+    },
+    {
+      "what": "Air Conditioner",
+      "part": "Danby DAC050MB1WDB Air Conditioning Unit",
+      "category": "Comfort",
+      "productUrl": "https://www.danby.com/en-us/shop/dac050mb1wdb/",
+      "manualUrl": "https://cdnns.danby.com/4973611/DAC050MB1WDB_EFSOM_20250211.1911201.pdf"
     }
   ]
 }
