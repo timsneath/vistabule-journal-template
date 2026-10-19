@@ -68,7 +68,7 @@ export async function getTrip(slug: string): Promise<TripEntry | null> {
 export function getSite(): {
   title: string;
   tagline?: string;
-  // The trailer's name (e.g. "Nessie"). Threaded into page titles, the home-page
+  // The trailer's name (e.g. "Itasca"). Threaded into page titles, the home-page
   // eyebrow, the odometer label and the About gallery. Optional — falls back to
   // generic wording when unset.
   trailerName?: string;

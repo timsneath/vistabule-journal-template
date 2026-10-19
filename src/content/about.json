@@ -1,7 +1,7 @@
 {
-  "heading": "Meet Nessie",
+  "heading": "Meet Itasca",
   "photo": "/src/assets/about/placeholder-1.jpg",
-  "body": "This is demo content. **Nessie** is the imaginary teardrop trailer used to show off this template.\n\nReplace this page with your own trailer's story — how you found her, what you love about her, where she came from. You can write in [Markdown](https://www.markdownguide.org/basic-syntax/): **bold**, *italic*, [links](https://example.com), and lists all work.\n\nEdit everything here through the visual editor at `/admin`, or by editing `src/content/about.json` directly. The spec sheet on the right and the gallery below are optional — fill them in or remove them.",
+  "body": "This is demo content. **Itasca** is the imaginary teardrop trailer used to show off this template.\n\nReplace this page with your own trailer's story — how you found her, what you love about her, where she came from. You can write in [Markdown](https://www.markdownguide.org/basic-syntax/): **bold**, *italic*, [links](https://example.com), and lists all work.\n\nEdit everything here through the visual editor at `/admin`, or by editing `src/content/about.json` directly. The spec sheet on the right and the gallery below are optional — fill them in or remove them.",
   "gallery": [
     {
       "image": "/src/assets/about/placeholder-2.jpg",

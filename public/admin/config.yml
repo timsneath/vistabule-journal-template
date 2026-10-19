@@ -38,7 +38,7 @@ collections:
               label: Trailer name,
               widget: string,
               required: false,
-              hint: "Your trailer's name (e.g. Nessie). Used in page titles, the home-page tagline and the About gallery.",
+              hint: "Your trailer's name (e.g. Itasca). Used in page titles, the home-page tagline and the About gallery.",
             }
           - name: authors
             label: Authors

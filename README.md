@@ -12,7 +12,7 @@ own all of it. This repo is a **template**: fork it, replace the demo content wi
 your own, and publish.
 
 > Built by a [Vistabule](https://vistabule.com) owner, for teardrop owners. The demo
-> content features an imaginary trailer named *Nessie* — you'll replace all of it.
+> content features an imaginary trailer named *Itasca* — you'll replace all of it.
 
 **[→ Jump to "Set it up"](#set-it-up-step-by-step)**
 
