@@ -31,6 +31,16 @@ const nav = [
   { label: trailerName ? `About ${trailerName}` : 'About', href: withBase('about'), active: path === `${base}/about` },
   { label: "Owner's Manual", href: withBase('manual'), active: path === `${base}/manual` },
 ];
+
+// Phone breadcrumb: the current section, then the page itself when it sits
+// below one (a trip). Section pages are just their section.
+const section = nav.find((item) => item.active);
+const crumbs = section
+  ? [
+      { label: section.label, href: section.href },
+      ...(section.label === 'Trips' && path.startsWith(`${base}/trips/`) ? [{ label: title }] : []),
+    ]
+  : [{ label: title }];
 ---
 
 <!doctype html>
@@ -49,9 +59,9 @@ const nav = [
     <div class="site">
       <header class="site-header">
         <div class="wrap site-header__inner">
-          <a class="brand" href={withBase()}>
+          <a class="brand" href={withBase()} aria-label={siteName}>
             <Teardrop size={42} />
-            {siteName}
+            <span class="brand__name">{siteName}</span>
           </a>
           <nav class="nav" aria-label="Primary">
             {
@@ -62,6 +72,36 @@ const nav = [
               ))
             }
           </nav>
+          {/* phones: a one-row breadcrumb plus a menu of the sections */}
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <ol>
+              {
+                crumbs.map((c, i) =>
+                  c.href && i < crumbs.length - 1 ? (
+                    <li>
+                      <a href={c.href}>{c.label}</a>
+                    </li>
+                  ) : (
+                    <li aria-current="page">{c.label}</li>
+                  )
+                )
+              }
+            </ol>
+          </nav>
+          <details class="menu">
+            <summary aria-label="Menu">
+              <span class="menu__icon" aria-hidden="true" />
+            </summary>
+            <nav class="menu__panel" aria-label="Sections">
+              {
+                nav.map((item) => (
+                  <a href={item.href} aria-current={item.active ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                ))
+              }
+            </nav>
+          </details>
         </div>
       </header>
 
@@ -78,5 +118,20 @@ const nav = [
         </div>
       </footer>
     </div>
+    <script>
+      // The phone menu is a <details>; close it on a tap elsewhere or Escape.
+      const menu = document.querySelector<HTMLDetailsElement>('.menu');
+      if (menu) {
+        document.addEventListener('click', (e) => {
+          if (menu.open && !menu.contains(e.target as Node)) menu.open = false;
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && menu.open) {
+            menu.open = false;
+            menu.querySelector('summary')?.focus();
+          }
+        });
+      }
+    </script>
   </body>
 </html>
