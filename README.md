@@ -21,8 +21,10 @@ your own, and publish.
 ## What you get
 
 - **A home page** with your trips and a mechanical odometer totalling your miles.
-- **A page per trip**: dates, distance, nights out, where you stayed, a road-following
-  map, a photo gallery with a lightbox, and two "notes" columns (one per traveller).
+- **A page per trip**: dates, distance, nights out, where you stayed, maps of the
+  whole trip and of where you camped (road-following lines, with ferry crossings
+  drawn as crossings), a photo gallery with a lightbox, and two "notes" columns (one
+  per traveller).
 - **An About page** with your trailer's story, a spec sheet, and a photo gallery.
 - **An Owner's Manual page**: a tidy directory of your components with links to
   product pages and manuals.
@@ -132,13 +134,27 @@ but you can also edit the files directly:
 - **Trips**: delete the two files in `src/content/trips/` and add your own. Each trip
   is one `.json` file. (In the editor: *Trips → New Trip*.)
 - **About**: `src/content/about.json` — your trailer's story, specs, gallery.
-- **Owner's Manual**: `src/content/manual.json` — your components.
+- **Owner's Manual**: `src/content/manual.json` — links to the makers and manuals
+  for a Vistabule's components (the fan, Propex heater, Dometic stove and fridge,
+  Victron chargers, and so on). Keep the ones your trailer has and add your own.
 - **Photos**: put your own images in `src/assets/trips/` and `src/assets/about/`, then
   reference them from the content. The demo placeholder images can be deleted.
 
 **f. The "build your own" link.** The bottom of the About page links back to this
 template so other owners can find it. It's in `src/pages/about.astro` (search for
 "build your own logbook") — keep it to pay it forward, change it, or remove it.
+
+**Trip maps.** Each trip's *Waypoints* are the places you went, in order:
+
+- **Camp** — where you slept. The trip page opens a map on your camps and the stops
+  around them, beside a map of the whole trip (on phones, one map with a *Whole
+  trip* button). If no waypoint is a camp, places named under *Where we stayed* — or
+  else the last stop — count as camps.
+- **Stop** — somewhere you visited; gets a pin.
+- **Via** — no pin; just nudges the line onto the roads you actually took.
+
+*How we got here* says how you travelled the leg **into** a waypoint: *Drive*
+(follows the roads) or *Ferry* (drawn as a straight dashed crossing).
 
 After editing trip maps locally, refresh the cached routes once:
 
@@ -199,8 +215,9 @@ the editor) change content.
    ```
 2. In the [Cloudflare dashboard](https://dash.cloudflare.com): **Workers & Pages →
    Create → Workers → Import a repository**. Choose your fork.
-3. Set the **build command** to `npm run build` and deploy. Cloudflare reads
-   `wrangler.jsonc`, builds the site, and serves the files in `dist/`.
+3. Set the **build command** to `npm run build` and the **deploy command** to
+   `npx wrangler deploy`, then deploy. Cloudflare reads `wrangler.jsonc`, builds the
+   site, and serves the files in `dist/`.
 4. Your site goes live at `https://<your-worker-name>.<your-subdomain>.workers.dev`.
 
 From now on, every push (including edits made in `/admin`) triggers a rebuild — your
@@ -295,8 +312,8 @@ Want to change the colors or fonts? They're all CSS variables at the top of
   straight lines.
 - **Photos don't show.** Make sure the path in your content matches the file, e.g.
   `"/src/assets/trips/my-photo.jpg"`, and that the file is in `src/assets/`.
-- **Build fails on Cloudflare.** Confirm the build command is `npm run build` and that
-  your Node version there is 22+.
+- **Build fails on Cloudflare.** Confirm the build command is `npm run build`. The
+  `.node-version` file pins the Node version Cloudflare uses (24).
 
 ## Credits & license
 

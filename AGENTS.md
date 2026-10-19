@@ -36,6 +36,19 @@ is the fast operational guide; `README.md` is the fuller setup-and-fork referenc
    when waypoints change, so normal builds make **no** network calls. It never fails a
    build: on any routing error the map falls back to a straight dashed line. Run
    `npm run routes` after changing waypoints locally; it also runs as `prebuild`.
+   Routes are stored as `segments` by mode: each waypoint's `arrive` (`drive` |
+   `ferry`) describes the leg into it, and ferry legs are straight crossings, never
+   sent to OSRM. Bump `FORMAT` in the script to force a rebake of every trip.
+8. **Two maps: the whole trip and the destination.** Waypoints of kind `camp`
+   (else stops named in `stays`, else the last stop) plus the other stops are the
+   destination. On desktop `TripMap.astro` shows the whole trip beside a map of the
+   destination, whose column is shaped to its bounds (3:4…4:3); home is a house
+   symbol and camps a tent. On phones only the destination map shows, with a
+   "Whole trip" toggle. A trip whose route stays near the destination gets one map.
+9. **Phone header is a breadcrumb.** Below 34rem the header collapses to the
+   teardrop (home), a "Trips › trip title" breadcrumb, and a ☰ section menu
+   (`src/layouts/Layout.astro` + the header block in `global.css`). Desktop shows
+   the brand and nav links.
 
 ## Identity is config-driven
 
