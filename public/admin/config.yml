@@ -178,14 +178,16 @@ collections:
               - { label: Drive, value: drive }
               - { label: Ferry, value: ferry }
           # Search a place by name (or click the map / use your location) — no
-          # more hand-entering coordinates. Stores a GeoJSON Point.
+          # more hand-entering coordinates. Stores a GeoJSON Point. The picker
+          # opens on the Upper Midwest ([lng, lat]) — move `center` to wherever
+          # you usually travel.
           - {
               name: location,
               label: Location,
               widget: map,
               type: Point,
-              center: [-98, 39],
-              zoom: 3,
+              center: [-93.2, 45.5],
+              zoom: 5,
             }
       - {
           name: roundTrip,

@@ -2,28 +2,31 @@
   "title": "First long haul",
   "startDate": "2026-06-20",
   "endDate": "2026-06-23",
-  "location": "High Desert Loop",
-  "stays": ["Juniper Campground", "Riverbend RV Park"],
-  "miles": 214,
+  "location": "Mississippi Headwaters, MN",
+  "stays": [
+    "Itasca State Park — Pine Ridge Campground",
+    "Lake Bemidji State Park"
+  ],
+  "miles": 520,
   "coverPhoto": "/src/assets/trips/trip2-cover.jpg",
   "waypoints": [
     {
-      "label": "Home",
+      "label": "Vistabule factory, Eagan",
       "kind": "stop",
-      "location": "{\"type\":\"Point\",\"coordinates\":[-122.6765,45.5231]}"
+      "location": "{\"type\":\"Point\",\"coordinates\":[-93.1554,44.8575]}"
     },
     {
-      "label": "Juniper Campground",
+      "label": "Itasca State Park",
       "kind": "camp",
-      "location": "{\"type\":\"Point\",\"coordinates\":[-121.52,44.06]}"
+      "location": "{\"type\":\"Point\",\"coordinates\":[-95.1907,47.2348]}"
     },
     {
-      "label": "Riverbend RV Park",
+      "label": "Lake Bemidji State Park",
       "kind": "camp",
-      "location": "{\"type\":\"Point\",\"coordinates\":[-121.31,44.26]}"
+      "location": "{\"type\":\"Point\",\"coordinates\":[-94.825,47.5362]}"
     }
   ],
-  "roundTrip": false,
+  "roundTrip": true,
   "photos": [
     {
       "image": "/src/assets/trips/trip2-1.jpg",

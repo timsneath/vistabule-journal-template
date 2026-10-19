@@ -2,25 +2,44 @@
   "title": "A weekend by the lake",
   "startDate": "2026-05-15",
   "endDate": "2026-05-17",
-  "location": "Demo Lake State Park",
-  "stays": ["Demo Lake State Park — site 12"],
-  "miles": 96,
+  "location": "Madeline Island, WI",
+  "stays": [
+    "Big Bay State Park"
+  ],
+  "miles": 500,
   "coverPhoto": "/src/assets/trips/trip1-cover.jpg",
   "waypoints": [
     {
-      "label": "Home",
+      "label": "Vistabule factory, Eagan",
       "kind": "stop",
-      "location": "{\"type\":\"Point\",\"coordinates\":[-122.6765,45.5231]}"
+      "location": "{\"type\":\"Point\",\"coordinates\":[-93.1554,44.8575]}"
     },
     {
-      "label": "Coffee stop",
+      "label": "Bayfield ferry dock",
       "kind": "via",
-      "location": "{\"type\":\"Point\",\"coordinates\":[-122.3,45.6]}"
+      "location": "{\"type\":\"Point\",\"coordinates\":[-90.8111,46.8111]}"
     },
     {
-      "label": "Demo Lake State Park",
+      "label": "Madeline Island ferry",
+      "kind": "via",
+      "arrive": "ferry",
+      "location": "{\"type\":\"Point\",\"coordinates\":[-90.7896,46.7789]}"
+    },
+    {
+      "label": "Big Bay State Park",
       "kind": "camp",
-      "location": "{\"type\":\"Point\",\"coordinates\":[-121.78,45.71]}"
+      "location": "{\"type\":\"Point\",\"coordinates\":[-90.6944,46.8019]}"
+    },
+    {
+      "label": "",
+      "kind": "via",
+      "location": "{\"type\":\"Point\",\"coordinates\":[-90.7896,46.7789]}"
+    },
+    {
+      "label": "",
+      "kind": "via",
+      "arrive": "ferry",
+      "location": "{\"type\":\"Point\",\"coordinates\":[-90.8111,46.8111]}"
     }
   ],
   "roundTrip": true,
@@ -35,5 +54,5 @@
     }
   ],
   "notesOne": "This is where the first author's notes go. Every trip has two note fields so two travellers can each keep their own log. The labels come from the Authors you set in Site settings.",
-  "notesTwo": "And this is the second author's voice. Delete this demo trip once you've added a real one — or edit it in the visual editor at /admin."
+  "notesTwo": "The crossing to Madeline Island is marked as a ferry (\"How we got here\" on a waypoint), so the map draws a dashed line across the water instead of road directions. Delete this demo trip once you've added a real one — or edit it in the visual editor at /admin."
 }
